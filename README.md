@@ -3,7 +3,7 @@
 ## Team Members
 
 - Rayan Adam Higa/de17quvu/
-- Name 2
+- Yassin Radi
 - Name 3
 
 ## Installation
