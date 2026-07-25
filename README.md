@@ -2,9 +2,9 @@
 
 ## Team Members
 
-- Rayan Adam Higa/de17quvu/
-- Yassin Radi
-- Name 3
+- Rayan Adam Higa/de17quvu/  TCP/Backend
+- Yassin Radi Documentation/Integration
+- Name 3 Visualization/frontend
 
 ## Installation
 
