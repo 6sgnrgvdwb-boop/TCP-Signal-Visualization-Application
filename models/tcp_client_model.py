@@ -3,9 +3,7 @@ import numpy as np
 
 
 class TcpClientModel:
-    """
-    Simple TCP client model for receiving EMG data.
-    """
+   
 
     def __init__(
         self,

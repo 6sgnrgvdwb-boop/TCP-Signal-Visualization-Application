@@ -45,6 +45,10 @@ class SignalProcessor:
         Butterworth bandpass filter.
         """
 
+        # Avoid filtering very short signals
+        if len(signal) < 30:
+            return signal
+
         nyquist = self.sampling_rate / 2
 
         low = self.low_cut / nyquist
@@ -60,7 +64,9 @@ class SignalProcessor:
 
     def process(self, signal, mode):
         """
-        mode:
+        Processes the signal based on the selected mode.
+
+        Modes:
             original
             rms
             filtered
@@ -69,10 +75,10 @@ class SignalProcessor:
         if mode == "original":
             return self.original(signal)
 
-        if mode == "rms":
+        elif mode == "rms":
             return self.rms(signal)
 
-        if mode == "filtered":
+        elif mode == "filtered":
             return self.filtered(signal)
 
         return signal
