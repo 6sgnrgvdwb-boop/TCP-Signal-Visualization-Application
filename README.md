@@ -62,5 +62,29 @@ Dependencies (`requirements.txt`): `numpy`, `scipy`, `matplotlib`,
 > print(pd.read_pickle("recording.pkl")["device_information"]["sampling_frequency"])
 > ```
 
+## 3. Using the live view (VisPy)
+
+The main window plots the incoming signal over a rolling **10-second
+window** (the same rolling-buffer length as the Exercise 5 client), with
+time in seconds on the x-axis and auto-scaled amplitude on the y-axis.
+
+* **Channel** dropdown — selects which of the 32 channels is displayed.
+* **Signal mode** dropdown — **Original**, **RMS** or **Filtered**,
+  applied live.
+* **Plot All Channels** — shows all 32 channels at once, stacked with a
+  constant vertical offset (channel 1 at the bottom, channel 32 at the
+  top), giving a quick overview of activity across the whole array.
+
+## 4. Offline inspection (Matplotlib)
+
+Once streaming has stopped, the complete recorded session can be
+inspected in the Matplotlib window.
+
+* Choose a **Channel** and **Signal mode**, or the all-channels option,
+  then press **Refresh plot**.
+* Use the Matplotlib toolbar to zoom and pan through the recording.
+* The offline plot is static: it only redraws when refreshed. Opening a
+  new connection starts a new recording.
+
 
 
