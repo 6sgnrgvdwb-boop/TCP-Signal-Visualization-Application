@@ -1,38 +1,82 @@
 import numpy as np
+from scipy.signal import butter, filtfilt
 
 
-class SignalBuffer:
-    def __init__(self, channels=32, sampling_rate=1000, window_seconds=10):
-        self.channels = channels
+class SignalProcessor:
+    """
+    Signal processing methods for the EMG signal.
+    """
+
+    def __init__(
+        self,
+        sampling_rate=1000,
+        rms_window=100,
+        low_cut=20,
+        high_cut=450,
+        filter_order=4,
+    ):
         self.sampling_rate = sampling_rate
-        self.window_seconds = window_seconds
+        self.rms_window = rms_window
+        self.low_cut = low_cut
+        self.high_cut = high_cut
+        self.filter_order = filter_order
 
-        self.max_samples = sampling_rate * window_seconds
-
-        self.buffer = np.empty((channels, 0), dtype=np.float64)
-
-    def append(self, new_data):
+    def original(self, signal):
         """
-        new_data shape:
-        (32, 18)
+        Return the original signal.
+        """
+        return signal
+
+    def rms(self, signal):
+        """
+        Root Mean Square using a moving window.
         """
 
-        self.buffer = np.concatenate(
-            (self.buffer, new_data),
-            axis=1
+        if len(signal) < self.rms_window:
+            return signal
+
+        squared = signal ** 2
+
+        kernel = np.ones(self.rms_window) / self.rms_window
+
+        mean = np.convolve(
+            squared,
+            kernel,
+            mode="same",
         )
 
-        if self.buffer.shape[1] > self.max_samples:
-            self.buffer = self.buffer[:, -self.max_samples:]
+        return np.sqrt(mean)
 
-    def get_channel(self, channel):
-        return self.buffer[channel]
+    def filtered(self, signal):
+        """
+        Butterworth bandpass filter.
+        """
 
-    def get_all_channels(self):
-        return self.buffer
+        nyquist = self.sampling_rate / 2
 
-    def clear(self):
-        self.buffer = np.empty((self.channels, 0), dtype=np.float64)
+        low = self.low_cut / nyquist
+        high = self.high_cut / nyquist
 
-    def has_data(self):
-        return self.buffer.shape[1] > 0
+        b, a = butter(
+            self.filter_order,
+            [low, high],
+            btype="band",
+        )
+
+        return filtfilt(b, a, signal)
+
+    def process(self, signal, mode):
+        """
+        Select the processing mode.
+        """
+
+        if mode == "original":
+            return self.original(signal)
+
+        elif mode == "rms":
+            return self.rms(signal)
+
+        elif mode == "filtered":
+            return self.filtered(signal)
+
+        return signal

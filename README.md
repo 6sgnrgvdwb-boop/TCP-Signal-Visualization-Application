@@ -14,3 +14,12 @@ over TCP, built with an **MVVM** architecture.
 
 
 
+### TCP Backend
+
+- TCP socket connection
+- Byte buffer
+- Packet reconstruction
+- Rolling buffer (10 seconds)
+- float64 data
+- 32 channels
+- 18 samples per packet
