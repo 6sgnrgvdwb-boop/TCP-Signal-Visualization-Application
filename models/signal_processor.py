@@ -7,7 +7,7 @@ class SignalProcessor:
         self.sampling_rate = sampling_rate
 
         # RMS parameters
-        self.rms_window = 100
+        self.rms_window = int(0.1 * sampling_rate)   # 100ms if sample rate is 1000HZ and 200ms if sample rate is 2000HZ
 
         # Butterworth filter parameters
         self.low_cut = 20
