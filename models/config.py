@@ -10,11 +10,11 @@ real value from the Exercise 2 recording:
 
 # --- TCP server (same format as Exercise 5) ---
 HOST = "127.0.0.1"
-DEFAULT_PORT = 5000          # the port used in test_tcp.py
+DEFAULT_PORT = 12345          # the port used in exercise 5
 
 N_CHANNELS = 32
 SAMPLES_PER_PACKET = 18
-SAMPLE_RATE = 1000
+SAMPLE_RATE = 2000
 
 # --- buffers and timing ---
 WINDOW_SECONDS = 10          # length of the window in TcpClientmodel
