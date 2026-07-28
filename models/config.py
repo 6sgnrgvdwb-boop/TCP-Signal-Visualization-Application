@@ -8,7 +8,7 @@ real value from the Exercise 2 recording:
     print(data["device_information"]["sampling_frequency"])
 """
 
-# --- TCP server (same format as Exercise 5) ---
+
 HOST = "127.0.0.1"
 DEFAULT_PORT = 12345          # the port used in exercise 5
 
