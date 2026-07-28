@@ -1,32 +1,58 @@
-# TCP Signal Visualization Application - Final Project
+# TCP Signal Visualization Application
 
-A PySide6 desktop application for **live visualization** (VisPy) and
-**offline inspection** (Matplotlib) of multi-channel EMG data streamed
-over TCP, built with an **MVVM** architecture.
+A **PySide6** desktop application for **live visualization** (VisPy) and **offline inspection** (Matplotlib) of multi-channel EMG data streamed over TCP, built using the **Model–View–ViewModel (MVVM)** architecture.
 
-> **Group:** '2'
-> 
-> | Team member | Responsibility |
-> |---|---|
-> | 'Rayan Adam' | TCP / backend — `models/` |
-> | 'Hemant' | Visualization / frontend — `views/` |
-> | 'Yassin Radi' | Documentation / integration — `viewmodels/`, `main.py`, `models/config.py`, README, tooling |
+> **Group:** 2
 
+| Team Member     | Responsibility                                                                             |
+| --------------- | ------------------------------------------------------------------------------------------ |
+| **Rayan Adam**  | TCP backend (`models/`)                                                                    |
+| **Hemant**      | Visualization / frontend (`views/`)                                                        |
+| **Yassin Radi** | Documentation, integration (`viewmodels/`, `main.py`, `models/config.py`, README, tooling) |
 
+---
+
+## Screenshot
+
+> *(Add a screenshot here after uploading one to the repository.)*
+
+```markdown
+![Application Screenshot](images/screenshot.png)
+```
+
+---
+
+## Features
+
+* Live TCP streaming from an EMG server
+* Real-time visualization with **VisPy**
+* Offline signal analysis with **Matplotlib**
+* Support for **32 EMG channels**
+* Original, Filtered and RMS signal modes
+* Rolling 10-second data buffer
+* MVVM software architecture
+* Automatic packet reconstruction and buffering
+* Error handling for common connection problems
+
+---
 
 ## TCP Backend
 
-- TCP socket connection
-- Byte buffer
-- Packet reconstruction
-- Rolling buffer (10 seconds)
-- float64 data
-- 32 channels
-- 18 samples per packet
+The TCP backend provides:
+
+* TCP socket connection
+* Byte buffer management
+* Packet reconstruction
+* Rolling buffer (10 seconds)
+* `float64` signal data
+* 32 channels
+* 18 samples per packet
+
+---
 
 ## Installation
 
-Needs Python 3.10 or newer.
+Requires **Python 3.10** or newer.
 
 ```bash
 python -m venv .venv
@@ -34,77 +60,133 @@ source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-Packages: numpy, scipy, matplotlib, PySide6, vispy.
+All required dependencies are listed in `requirements.txt`.
 
-## Running it
+---
 
-1. Start the TCP server from Exercise 5.
-2. Start the application with `python main.py`.
-3. Type the port of the server into the *TCP port* field and press
-   **Connect**. Streaming starts by itself, **Disconnect** stops it.
+## Running the Application
 
-`SAMPLE_RATE` in `models/config.py` has to match the sampling rate of the
-server, because it is used for the time axis and the filter.
+1. Start the TCP server from **Exercise 5**.
+2. Launch the application:
 
-## Live plot (VisPy)
-
-Shows the last 10 seconds of the signal, with the time in seconds on the
-x axis.
-
-- **Channel**: which of the 32 channels is shown.
-- **Signal mode**: Original, RMS or Filtered.
-- **Plot All Channels**: shows all 32 channels at once, drawn with a
-  vertical offset so they do not overlap.
-
-## Offline plot (Matplotlib)
-
-After disconnecting, press the button that opens the Matplotlib window to
-look at the whole recording. Choose a channel and a signal mode there and
-press refresh. You can also show all channels at once. This plot does not
-update live, only when you refresh it.
-
-## Signal processing
-
-The parameters come from Exercise 2:
-
-| Mode | What it does |
-|---|---|
-| Original | nothing, the raw signal |
-| Filtered | Butterworth bandpass, order 4, 20-450 Hz, with `filtfilt` |
-| RMS | first the bandpass filter, then a moving RMS with a 100 ms window |
-
-The RMS is calculated on the filtered signal, the same order as in
-Exercise 2. Filtering first removes the offset, otherwise the RMS mostly shows the baseline 
-instead of the signal.
-
-## Project structure (MVVM)
-
-```
-main.py                        starts everything and connects the layers
-
-models/                        no GUI code in here
-    config.py                  all settings and constants
-    signal_processor.py        filter and RMS
-    tcp_client_model.py        socket, byte buffer, packet reconstruction
-
-
-viewmodels/
-    main_viewmodel.py          connects the GUI to the models
-
-views/                         only GUI code in here
-    main_window.py             main window with the controls
-    matplotlib_window.py       offline plot
-    vispy_plot_widget.py       live plot
-
+```bash
+python main.py
 ```
 
-The View never talks to the TCP client and never touches the data
-directly. It only calls methods on the ViewModel and reacts to its
-signals. The models do not know anything about Qt or the GUI. `main.py` is
-the only file that knows all three layers.
+3. Enter the TCP server port into the **TCP Port** field.
+4. Press **Connect** to begin streaming.
+5. Press **Disconnect** to stop streaming.
 
-## Error handling
+> **Note:**
+> `SAMPLE_RATE` in `models/config.py` must match the sampling rate used by the TCP server because it is used for both the time axis and the signal processing filters.
 
-Errors show a message in the status bar instead of crashing: wrong port,
-server not running, connection lost while streaming, and opening the
-offline plot before anything was recorded.
+---
+
+## Live Visualization (VisPy)
+
+The live plot continuously displays the **last 10 seconds** of streamed EMG data.
+
+Available options:
+
+* **Channel** – Select one of the 32 channels.
+* **Signal Mode** – Original, Filtered or RMS.
+* **Plot All Channels** – Displays all 32 channels simultaneously using vertical offsets to prevent overlap.
+
+---
+
+## Offline Visualization (Matplotlib)
+
+After disconnecting from the server, the complete recording can be inspected using Matplotlib.
+
+The offline viewer allows you to:
+
+* Select any recorded channel
+* Switch between Original, Filtered and RMS modes
+* Display all channels simultaneously
+* Refresh the visualization after changing settings
+
+Unlike the live plot, the offline plot only updates when **Refresh** is pressed.
+
+---
+
+## Signal Processing
+
+The processing pipeline follows the implementation from **Exercise 2**.
+
+| Mode         | Description                                                                          |
+| ------------ | ------------------------------------------------------------------------------------ |
+| **Original** | Displays the raw signal without processing.                                          |
+| **Filtered** | Fourth-order Butterworth band-pass filter (20–450 Hz) using `filtfilt`.              |
+| **RMS**      | Applies the Butterworth filter first, followed by a moving RMS with a 100 ms window. |
+
+The RMS is always calculated from the **filtered** signal. Filtering removes the DC offset before RMS computation, producing a more meaningful envelope of the EMG signal.
+
+---
+
+## Project Structure (MVVM)
+
+```text
+main.py
+│
+├── models/
+│   ├── config.py
+│   ├── signal_processor.py
+│   └── tcp_client_model.py
+│
+├── viewmodels/
+│   └── main_viewmodel.py
+│
+└── views/
+    ├── main_window.py
+    ├── matplotlib_window.py
+    └── vispy_plot_widget.py
+```
+
+### Layer Responsibilities
+
+**Model**
+
+* TCP communication
+* Packet reconstruction
+* Signal processing
+* Application configuration
+
+**ViewModel**
+
+* Connects the GUI with the backend
+* Transfers data between Model and View
+* Exposes Qt signals and application logic
+
+**View**
+
+* Contains only GUI code
+* Displays data
+* Never communicates directly with the TCP backend
+
+`main.py` is responsible for connecting all three layers.
+
+---
+
+## Error Handling
+
+The application reports errors in the status bar instead of terminating unexpectedly.
+
+Handled situations include:
+
+* Invalid TCP port
+* Server unavailable
+* Connection lost during streaming
+* Attempting to open the offline viewer before any data has been recorded
+
+---
+
+## Technologies
+
+* Python
+* PySide6
+* VisPy
+* Matplotlib
+* NumPy
+* SciPy
+* TCP Sockets
+* MVVM Architecture
