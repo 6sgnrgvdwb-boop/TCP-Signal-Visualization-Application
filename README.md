@@ -16,9 +16,9 @@ A **PySide6** desktop application for **live visualization** (VisPy) and **offli
 
 > *(Add a screenshot here after uploading one to the repository.)*
 
-```markdown
+
 ![Application Screenshot](images/screenshot.png)
-```
+
 
 ---
 
