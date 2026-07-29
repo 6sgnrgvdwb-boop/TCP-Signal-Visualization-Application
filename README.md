@@ -96,16 +96,13 @@ Available options:
 
 ## Offline Visualization (Matplotlib)
 
-After disconnecting from the server, the complete recording can be inspected using Matplotlib.
+After streaming has stopped or the server has been disconnected, the recorded signal can be inspected using Matplotlib.
 
 The offline viewer allows you to:
 
 * Select any recorded channel
 * Switch between Original, Filtered and RMS modes
-* Display all channels simultaneously
-* Refresh the visualization after changing settings
-
-Unlike the live plot, the offline plot only updates when **Refresh** is pressed.
+* Inspect the recorded signal over time
 
 ---
 
@@ -117,9 +114,9 @@ The processing pipeline follows the implementation from **Exercise 2**.
 | ------------ | ------------------------------------------------------------------------------------ |
 | **Original** | Displays the raw signal without processing.                                          |
 | **Filtered** | Fourth-order Butterworth band-pass filter (20–450 Hz) using `filtfilt`.              |
-| **RMS**      | Applies the Butterworth filter first, followed by a moving RMS with a 100 ms window. |
+| **RMS**      |  Moving RMS using a 100 ms window. |
 
-The RMS is always calculated from the **filtered** signal. Filtering removes the DC offset before RMS computation, producing a more meaningful envelope of the EMG signal.
+The RMS signal is calculated using a moving window of 100 ms.
 
 ---
 

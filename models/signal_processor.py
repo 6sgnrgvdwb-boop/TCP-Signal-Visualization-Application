@@ -63,14 +63,7 @@ class SignalProcessor:
         return filtfilt(b, a, signal)
 
     def process(self, signal, mode):
-        """
-        Processes the signal based on the selected mode.
-
-        Modes:
-            original
-            rms
-            filtered
-        """
+      
 
         if mode == "original":
             return self.original(signal)
