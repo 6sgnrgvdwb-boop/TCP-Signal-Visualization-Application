@@ -1,96 +1,131 @@
 import numpy as np
 
 from PySide6.QtWidgets import (
-    QComboBox,
-    QHBoxLayout,
     QLabel,
     QMainWindow,
+    QPushButton,
     QVBoxLayout,
     QWidget,
 )
 
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
 from matplotlib.figure import Figure
-
-from models.signal_processor import SignalProcessor
 
 
 class MatplotlibWindow(QMainWindow):
-    def __init__(self, channel_data, sampling_rate):
+    def __init__(self, x, data, title):
         super().__init__()
 
-        self.channel_data = np.asarray(channel_data)
-        self.sampling_rate = sampling_rate
-        self.processor = SignalProcessor(sampling_rate)
+        self.x = np.asarray(x)
+        self.data = np.asarray(data)
+        self.title = title
 
-        self.setWindowTitle("Offline Signal Inspection")
+        if self.data.ndim == 1:
+            self.data = self.data.reshape(1, -1)
+        if self.data.ndim == 1:
+            self.data = self.data.reshape(1, -1)
+
+            number_of_channels = self.data.shape[0]
+            number_of_samples = self.data.shape[1]
+
+            self.plot_information = (
+                f"Channels: {number_of_channels} | "
+                f"Samples: {number_of_samples}"
+            )
+
+        self.setWindowTitle(title)
+
+        self.setWindowTitle(title)
         self.resize(1000, 700)
 
         self.setup_ui()
-        self.connect_signals()
         self.update_plot()
 
     def setup_ui(self):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
-        main_layout = QVBoxLayout(central_widget)
-        controls_layout = QHBoxLayout()
+        layout = QVBoxLayout(central_widget)
 
-        self.channel_combo = QComboBox()
-        for channel in range(self.channel_data.shape[0]):
-            self.channel_combo.addItem(f"Channel {channel + 1}")
+        self.info_label = QLabel(
+            f"{self.plot_information} | "
+            "Use the toolbar to zoom, pan, or save the plot."
+        )
 
-        self.signal_combo = QComboBox()
-        self.signal_combo.addItems(["Original", "Filtered", "RMS"])
-
-        controls_layout.addWidget(QLabel("Channel:"))
-        controls_layout.addWidget(self.channel_combo)
-
-        controls_layout.addWidget(QLabel("Signal mode:"))
-        controls_layout.addWidget(self.signal_combo)
-
-        controls_layout.addStretch()
+        self.refresh_button = QPushButton("Redraw Plot")
+        self.refresh_button.clicked.connect(self.update_plot)
 
         self.figure = Figure(figsize=(10, 6))
         self.canvas = FigureCanvas(self.figure)
+        self.toolbar = NavigationToolbar2QT(self.canvas, self)
+
         self.ax = self.figure.add_subplot(111)
 
-        main_layout.addLayout(controls_layout)
-        main_layout.addWidget(self.canvas)
-
-    def connect_signals(self):
-        self.channel_combo.currentIndexChanged.connect(self.update_plot)
-        self.signal_combo.currentTextChanged.connect(self.update_plot)
+        layout.addWidget(self.info_label)
+        layout.addWidget(self.refresh_button)
+        layout.addWidget(self.toolbar)
+        layout.addWidget(self.canvas)
 
     def update_plot(self):
-        if self.channel_data.ndim != 2:
+        if self.data.ndim != 2:
             return
 
-        if self.channel_data.shape[1] < 2:
+        if self.data.shape[1] < 2:
             return
-
-        channel_index = self.channel_combo.currentIndex()
-        signal_mode = self.signal_combo.currentText()
-
-        original_signal = self.channel_data[channel_index]
-
-        displayed_signal = self.processor.process(
-            original_signal,
-            signal_mode.lower()
-        )
-
-        time_axis = np.arange(len(displayed_signal)) / self.sampling_rate
+        if len(self.x) != self.data.shape[1]:
+            return
 
         self.ax.clear()
-        self.ax.plot(time_axis, displayed_signal)
 
-        self.ax.set_title(
-            f"{signal_mode} Signal - Channel {channel_index + 1}"
-        )
+        if self.data.shape[0] == 1:
+            self.plot_single_channel()
+        else:
+            self.plot_all_channels()
+
+        self.ax.set_title(self.title)
         self.ax.set_xlabel("Time (s)")
-        self.ax.set_ylabel("Amplitude")
         self.ax.grid(True)
 
         self.figure.tight_layout()
         self.canvas.draw()
+
+    def plot_single_channel(self):
+        signal = self.data[0]
+
+        self.ax.plot(
+            self.x,
+            signal,
+            linewidth=1,
+        )
+
+        self.ax.set_ylabel("Amplitude")
+
+    def plot_all_channels(self):
+        channel_ranges = np.ptp(self.data, axis=1)
+        offset = np.median(channel_ranges) * 2
+
+        if offset <= 0 or not np.isfinite(offset):
+            offset = 1
+
+        tick_positions = []
+        tick_labels = []
+
+        for channel in range(self.data.shape[0]):
+            shifted_signal = (
+                self.data[channel]
+                + channel * offset
+            )
+
+            self.ax.plot(
+                self.x,
+                shifted_signal,
+                linewidth=0.8,
+            )
+
+            tick_positions.append(channel * offset)
+            tick_labels.append(str(channel + 1))
+
+        self.ax.set_ylabel("Channel")
+        self.ax.set_yticks(tick_positions)
+        self.ax.set_yticklabels(tick_labels)

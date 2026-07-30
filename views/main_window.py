@@ -178,11 +178,11 @@ class MainWindow(QMainWindow):
         """
 
         self.offline_window = MatplotlibWindow(
-            data,
-            config.SAMPLE_RATE,
-        )
+        x,
+        data,
+        title,
+    )
 
-        self.offline_window.setWindowTitle(title)
         self.offline_window.show()
 
     def closeEvent(self, event):
