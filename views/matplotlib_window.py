@@ -63,7 +63,7 @@ class MatplotlibWindow(QMainWindow):
         layout.addWidget(self.info_label)
         layout.addWidget(self.redraw_button)
         layout.addWidget(self.toolbar)
-        layout.addWidget(self.canvas)
+        layout.addWidget(self.canvas, 1)
 
     def update_plot(self):
         if self.data.ndim != 2:
