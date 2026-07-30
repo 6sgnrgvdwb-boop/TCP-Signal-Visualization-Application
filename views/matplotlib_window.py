@@ -21,20 +21,18 @@ class MatplotlibWindow(QMainWindow):
         self.data = np.asarray(data)
         self.title = title
 
+        # Convert one channel from 1-D to the same 2-D format
+        # used for multiple channels.
         if self.data.ndim == 1:
             self.data = self.data.reshape(1, -1)
-        if self.data.ndim == 1:
-            self.data = self.data.reshape(1, -1)
 
-            number_of_channels = self.data.shape[0]
-            number_of_samples = self.data.shape[1]
+        number_of_channels = self.data.shape[0]
+        number_of_samples = self.data.shape[1]
 
-            self.plot_information = (
-                f"Channels: {number_of_channels} | "
-                f"Samples: {number_of_samples}"
-            )
-
-        self.setWindowTitle(title)
+        self.plot_information = (
+            f"Channels: {number_of_channels} | "
+            f"Samples: {number_of_samples}"
+        )
 
         self.setWindowTitle(title)
         self.resize(1000, 700)
@@ -53,8 +51,8 @@ class MatplotlibWindow(QMainWindow):
             "Use the toolbar to zoom, pan, or save the plot."
         )
 
-        self.refresh_button = QPushButton("Redraw Plot")
-        self.refresh_button.clicked.connect(self.update_plot)
+        self.redraw_button = QPushButton("Redraw Plot")
+        self.redraw_button.clicked.connect(self.update_plot)
 
         self.figure = Figure(figsize=(10, 6))
         self.canvas = FigureCanvas(self.figure)
@@ -63,7 +61,7 @@ class MatplotlibWindow(QMainWindow):
         self.ax = self.figure.add_subplot(111)
 
         layout.addWidget(self.info_label)
-        layout.addWidget(self.refresh_button)
+        layout.addWidget(self.redraw_button)
         layout.addWidget(self.toolbar)
         layout.addWidget(self.canvas)
 
@@ -73,6 +71,7 @@ class MatplotlibWindow(QMainWindow):
 
         if self.data.shape[1] < 2:
             return
+
         if len(self.x) != self.data.shape[1]:
             return
 
