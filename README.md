@@ -4,11 +4,11 @@ A **PySide6** desktop application for **live visualization** (VisPy) and **offli
 
 > **Group:** 2
 
-| Team Member     | Responsibility                                                                             |
-| --------------- | ------------------------------------------------------------------------------------------ |
-| **Rayan Adam**  | TCP backend (`models/`)                                                                    |
-| **Hemant Singh Rathore**      | Visualization / frontend (`views/`)                                                        |
-| **Yassin Radi** | Documentation, integration (`viewmodels/`, `main.py`, `models/config.py`, README, tooling) |
+| Team Member             | Responsibility                                                                             |
+| ---------------         | ------------------------------------------------------------------------------------------ |
+| **Rayan Adam Higa**     | TCP backend (`models/`)                                                                    |
+| **Hemant Singh Rathore**| Visualization / frontend (`views/`)                                                        |
+| **Yassin Radi**         | Documentation, integration (`viewmodels/`, `main.py`, `models/config.py`, README, tooling) |
 
 ---
 
